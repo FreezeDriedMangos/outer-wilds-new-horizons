@@ -32,11 +32,11 @@ namespace NewHorizons.Builder.Body
             GameObject.Destroy(starGO.transform.Find("GravityWell_SUN").gameObject);
             GameObject.Destroy(starGO.transform.Find("RFVolume_SUN").gameObject);
             Component.Destroy(starGO.GetComponent<AstroObject>());
-            Component.Destroy(starGO.GetComponent<OWRigidbody>());
-            Component.Destroy(starGO.GetComponent<Rigidbody>());
             Component.Destroy(starGO.GetComponent<QuantumOrbit>());
-            Component.Destroy(starGO.GetComponent<CenterOfTheUniverseOffsetApplier>());
+            Component.Destroy(starGO.GetComponent<OWRigidbody>());
             Component.Destroy(starGO.GetComponent<KinematicRigidbody>());
+            Component.Destroy(starGO.GetComponent<Rigidbody>());
+            Component.Destroy(starGO.GetComponent<CenterOfTheUniverseOffsetApplier>());
 
             if (!starModule.HasAtmosphere) GameObject.Destroy(starGO.transform.Find("Atmosphere_SUN"));
 
@@ -168,7 +168,22 @@ namespace NewHorizons.Builder.Body
 
             sunController._rfVolume = body.GetComponentInChildren<ReferenceFrameVolume>();
 
+            // Make the sun proxy
+
+            var starProxyGO = Resources.Load("SunProxy") as GameObject;
+            starGO.name = "StarProxy";
+            starGO.transform.parent = body.transform;
+            starGO.transform.localPosition = Vector3.zero;
+
+            var proxy = starProxyGO.GetComponent<SunProxy>();
+            proxy._sunTransform = body.transform;
+            proxy._realSunController = sunController;
+
+            var proxyEffectController = starProxyGO.GetComponentInChildren<SunProxyEffectController>();
+            sunController._sunProxyEffects = proxyEffectController;
+
             //starGO.SetActive(true);
+            //starProxyGO.SetActive(true);
 
             return starController;
         }
